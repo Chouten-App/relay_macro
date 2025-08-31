@@ -1,0 +1,18 @@
+[package]
+name = "relay_macro"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2", features = ["full"] }
+quote = "1"   # For generating new code
+proc-macro2 = "1"
+relay_core = { path = "../relay_core" }  # Use your actual path!
+
+serde = { version = "1.0.219", default-features = false, features = ["derive", "alloc"] }
+
+# JSON serializer
+serde_json = { version = "1.0.142", default-features = false, features = ["alloc"] }

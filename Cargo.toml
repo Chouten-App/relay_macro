@@ -10,7 +10,7 @@ proc-macro = true
 syn = { version = "2", features = ["full"] }
 quote = "1"   # For generating new code
 proc-macro2 = "1"
-relay_core = { path = "../relay_core" }  # Use your actual path!
+relay_core = { git = "https://github.com/Chouten-App/relay_core.git" }  # Use your actual path!
 
 serde = { version = "1.0.219", default-features = false, features = ["derive", "alloc"] }
 

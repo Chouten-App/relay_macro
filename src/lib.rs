@@ -71,6 +71,7 @@ pub fn wasm_export(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let fn_name = &input_fn.sig.ident;
     let wrapper_name = format_ident!("{}_wrapper", fn_name);
+    let buf_name = format_ident!("{}_JSON_BUF", fn_name);
 
     let user_fn = &input_fn;
 
@@ -78,25 +79,25 @@ pub fn wasm_export(_attr: TokenStream, item: TokenStream) -> TokenStream {
         // Original user function
         #user_fn
 
-        static mut JSON_BUF: [u8; 4096] = [0; 4096];
+        static mut #buf_name: [u8; 65536] = [0; 65536];
 
         #[unsafe(no_mangle)]
         pub unsafe extern "C" fn #wrapper_name() -> *const u8 {
             let result = #fn_name();
             
-            match serde_json_core::to_slice(&result, &mut JSON_BUF[..]) {
+            match serde_json_core::to_slice(&result, &mut #buf_name[..]) {
                 Ok(len) => {
-                    if len < JSON_BUF.len() {
-                        JSON_BUF[len] = 0; // null terminator
+                    if len < #buf_name.len() {
+                        #buf_name[len] = 0; // null terminator
                     }
                 }
                 Err(_) => {
                     let err = b"{\"error\":\"overflow\"}\0";
-                    JSON_BUF[..err.len()].copy_from_slice(err);
+                    #buf_name[..err.len()].copy_from_slice(err);
                 }
             }
             
-            let ptr = JSON_BUF.as_ptr();
+            let ptr = #buf_name.as_ptr();
 
             //json.push('\0');
 
